@@ -20,6 +20,6 @@ if __name__ == '__main__':
     # print("Task awoken")
     # hackathon.solr.delete_all()
 
-    hackathon.periodic_task()
+    # hackathon.periodic_task()
 
-    # hackathon.call_WF.call_WF2(TEXTO_PRUEBA)
+    hackathon.call_WF.call_WF2(TEXTO_PRUEBA)

@@ -29,27 +29,8 @@ def call_WF(text):
 
 
 def call_WF2(text):
-    # WFComplete_HackathonITAINNOVA2
-    # url = SERVER_URL + '5a6aeb2b5a93535c9a69d33e?wait=true'
+    endpoint = SERVER_URL + config.settings.MORIARTY_WORKFLOW + '?wait=true'
 
-    # WFComplete_HackathonITAINNOVA3
-    # url = SERVER_URL + '5a74307d5a93535c9a6cd5b3?wait=true'
-
-    # WFComplete_HackathonITAINNOVA4
-    # url = SERVER_URL + '5a7b2e2b3975cb36167139cf?wait=true'
-
-    # WFComplete_HackathonITAINNOVA5
-    url = SERVER_URL + '5a7c18b73975cb257f5694ed?wait=true'
-
-    # text_length = len(text)
-    # if text_length < 50:
-    #     wordsMin = 0
-    #     wordsMax = 0
-    #     summarizer = False
-    # else:
-    #     wordsMin = text_length // 4
-    #     wordsMax = text_length // 2
-    #     summarizer = True
     wordsMin = 10
     wordsMax = 30
 
@@ -69,7 +50,7 @@ def call_WF2(text):
 
     try:
         logger.info("Sending Moriarty post request...")
-        response = requests.post(url, data=data_json, headers=headers)
+        response = requests.post(endpoint, data=data_json, headers=headers)
         logger.debug("Moriarty request response code: {}".format(response.status_code))
 
         response.raise_for_status()
@@ -99,20 +80,5 @@ def call_WF2(text):
                     'categories': results.get('categories')
                 }
         except KeyError:
-            logger.exception("Moriarty failed")
+            logger.error("Moriarty failed")
             logger.error(response.json()['message'])
-            logger.debug(response.json()['message'])
-
-
-if __name__ == '__main__':
-    # logging.basicConfig(level=logging.WARNING, format='%(asctime)s ' + logging.BASIC_FORMAT)
-    # Test text
-    print(call_WF2("El oeste de Texas divide la frontera entre Mexico y Nuevo México. "
-                   "Es muy bella pero aspera, llena de cactus, en esta region se encuentran las Davis Mountains. "
-                   "Todo el terreno esta lleno de piedra caliza, torcidos arboles de mezquite y espinosos nopales. "
-                   "Para admirar la verdadera belleza desertica, visite el Parque Nacional de Big Bend, "
-                   "cerca de Brownsville. Es el lugar favorito para los excurcionistas, acampadores y entusiastas "
-                   "de las rocas. Pequeños pueblos y ranchos se encuentran a lo largo de las planicies y cañones "
-                   "de esta region. El area solo tiene dos estaciones, tibia y realmente caliente. La mejor epoca "
-                   "para visitarla es de Diciembre a Marzo cuando los dias son tibios, las noches son frescas y "
-                   "florecen las plantas del desierto con la humedad en el aire."))

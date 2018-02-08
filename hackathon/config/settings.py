@@ -4,6 +4,20 @@ RSS_INITIAL_LIMIT_PER_PAGE = 10
 
 MINUTES_BETWEEN_CALLS = 300
 
+
+# WFComplete_HackathonITAINNOVA2
+# MORIARTY_WORKFLOW = '5a6aeb2b5a93535c9a69d33e'
+
+# WFComplete_HackathonITAINNOVA3
+# MORIARTY_WORKFLOW = '5a74307d5a93535c9a6cd5b3'
+
+# WFComplete_HackathonITAINNOVA4
+# MORIARTY_WORKFLOW = '5a7b2e2b3975cb36167139cf'
+
+# WFComplete_HackathonITAINNOVA5
+MORIARTY_WORKFLOW = '5a7c18b73975cb257f5694ed'
+
+
 FEEDS_URL = [
     'http://ep00.epimg.net/rss/elpais/portada.xml',
     'http://www.idi.mineco.gob.es/portal/site/MICINN/rssPrensa',
