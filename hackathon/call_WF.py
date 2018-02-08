@@ -1,8 +1,6 @@
 import json
 import requests
 
-from pprint import pprint
-
 from . import config
 import logging
 logger = logging.getLogger(__name__)
@@ -35,7 +33,13 @@ def call_WF2(text):
     # url = SERVER_URL + '5a6aeb2b5a93535c9a69d33e?wait=true'
 
     # WFComplete_HackathonITAINNOVA3
-    url = SERVER_URL + '5a74307d5a93535c9a6cd5b3?wait=true'
+    # url = SERVER_URL + '5a74307d5a93535c9a6cd5b3?wait=true'
+
+    # WFComplete_HackathonITAINNOVA4
+    # url = SERVER_URL + '5a7b2e2b3975cb36167139cf?wait=true'
+
+    # WFComplete_HackathonITAINNOVA5
+    url = SERVER_URL + '5a7c18b73975cb257f5694ed?wait=true'
 
     # text_length = len(text)
     # if text_length < 50:
@@ -53,11 +57,12 @@ def call_WF2(text):
         'NerBoolean': True,
         'OpinionBoolean': True,
         'SummarizerBoolean': True,
+        'ProcessingBoolean': True,
+        'CategorizationBoolean': True,
         'wordsMin': wordsMin,
         'wordsMax': wordsMax,
         'algorithm': 'rank',
-        'inputTextEntrada': text,
-        'tags': 'CDPQO',
+        'inputTextEntrada': text
     }
     data_json = json.dumps(data)
     headers = {'Content-type': 'application/json'}
@@ -90,7 +95,8 @@ def call_WF2(text):
                     'textOpinion': results['opinion'],
                     'textOpinionStr': TEXT_OPINION_STR[results['opinion']],
                     'summary': results['summarizedText'],
-                    'textProcessed': results.get('textProcessed')
+                    'textProcessed': results.get('textProcessed'),
+                    'categories': results.get('categories')
                 }
         except KeyError:
             logger.exception("Moriarty failed")

@@ -235,7 +235,7 @@ class RSS(object):
         elif 'updated_parsed' in entry:
             date = entry.updated_parsed
 
-        doc['createdAt'] = datetime(*date[:6]) if date else "NOW"
+        doc['createdAt'] = datetime(*date[:6]) if date else datetime.now()
 
         logger.debug("Finished building document " + doc['documentID'])
         logger.debug(doc)

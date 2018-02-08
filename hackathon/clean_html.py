@@ -39,7 +39,7 @@ def delete_styles(soup, styles):
             t.extract()
 
 
-def clean_html(url):
+def clean_url(url):
     text = None
     logger.debug("Requesting html from ulr " + url)
     try:
@@ -56,7 +56,7 @@ def clean_html(url):
     return text or ""
 
 
-def clean_html_text(html):
+def clean_html(html):
     text = ""
 
     soup = BeautifulSoup(html, "html.parser")
@@ -67,12 +67,12 @@ def clean_html_text(html):
     paragraphs = soup.find_all('p')
 
     matches = []
-    for p in paragraphs
+    for p in paragraphs:
         if not any(p in m.descendants for m in paragraphs):
             matches.append(p)
 
-    for p in matches:
-        aux = remove_html_tags(p.text)
+    for m in matches:
+        aux = remove_html_tags(m.text)
         if len(aux) > 100:
             text += aux + " "
 

@@ -1,8 +1,5 @@
 import pysolr
-try:
-    from . import config
-except:
-    import config.settings
+from . import config
 
 
 import logging
@@ -56,12 +53,3 @@ class Solr(object):
         last_date = self.get_last_value('collectorID:rss', 'date')
         logger.info("RSS last date in solr: {}".format(last_date))
         return last_date
-
-
-if __name__ == '__main__':
-    db = Solr()
-    # db.delete_all()
-    db.delete_rss()
-    # date = db.get_rss_last_date()
-    # print(type(date))
-    # print(date)
