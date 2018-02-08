@@ -43,7 +43,7 @@ def clean_url(url):
     text = None
     logger.debug("Requesting html from ulr " + url)
     try:
-        response = requests.get(url, proxies=config.settings.PROXY, verify=False)
+        response = requests.get(url, proxies=config.private.PROXY, verify=False)
         response.raise_for_status()
     except requests.HTTPError:
         logger.error("Clean html request failed with status code {}".format(response.status_code))

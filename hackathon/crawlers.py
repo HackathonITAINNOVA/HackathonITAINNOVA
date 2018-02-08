@@ -179,7 +179,7 @@ class Twitter(object):
 
 
 class RSS(object):
-    PROXY = config.settings.PROXY
+    PROXY = config.private.PROXY
     FEEDS_URL = config.settings.FEEDS_URL
 
     def __init__(self):
@@ -240,49 +240,6 @@ class RSS(object):
         logger.debug("Finished building document " + doc['documentID'])
         logger.debug(doc)
         return doc
-
-    # def parse_date(date):
-    #     try:
-    #         obj = datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %z")
-    #         return obj.strftime("%Y-%m-%dT%H:%M:%SZ")
-    #     except ValueError:
-    #         obj = datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %Z")
-    #         return obj.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    # def parse_one_xml(url):
-    #     ret = []
-    #     xml = requests.get(url, proxies=config.settings.PROXY).text
-    #     soup = BeautifulSoup(xml, "xml")
-    #     for i in soup.find_all("item"):
-    #         # try:
-    #         text = i.find("content:encoded").text
-    #         #text = html2text(text)
-    #         text = clean_html_text(text)
-    #         retWF = call_WF2(text)
-    #         if retWF:
-    #             date = RSS.parse_date(i.find("pubDate").text)
-    #             doc = {
-    #                 "createdAt": date,
-    #                 "collectorID": "rss",
-    #                 "url": i.find("link").text,
-    #                 "text": text
-    #             }
-    #             doc.update(retWF)
-    #             ret.append(doc)
-    #             print(doc)
-    #             s = Solr()
-    #             # s.insert(doc)
-    #         # except:
-    #         #     print("Error parsing, skipping to the next")
-    #         #     print(i, sys.exc_info()[0])
-    #         #     print("---------------")
-    #     return ret
-
-    # def parse_xml(self, urls):
-    #     ret = []
-    #     for url in urls:
-    #         ret.append(RSS.parse_one_xml(url))
-    #     return ret
 
 
 if __name__ == '__main__':

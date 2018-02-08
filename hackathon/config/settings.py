@@ -4,14 +4,6 @@ RSS_INITIAL_LIMIT_PER_PAGE = 10
 
 MINUTES_BETWEEN_CALLS = 300
 
-PROXY = {'http': '<host:port>'}
-
-MORIARTY_URL = '<nlp_services_rest_api>'
-
-SOLR_URL = '<db_solr_url>'
-SOLR_COLLECTION = '<collection_name>'
-
-
 FEEDS_URL = [
     'http://ep00.epimg.net/rss/elpais/portada.xml',
     'http://www.idi.mineco.gob.es/portal/site/MICINN/rssPrensa',

@@ -5,7 +5,7 @@ from . import config
 import logging
 logger = logging.getLogger(__name__)
 
-SERVER_URL = config.settings.MORIARTY_URL + '/rest/executeWorkFlow/'
+SERVER_URL = config.private.MORIARTY_URL + '/rest/executeWorkFlow/'
 
 TEXT_OPINION_STR = {
     '-1.0': "Muy malo",

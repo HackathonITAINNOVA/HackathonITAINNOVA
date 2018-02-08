@@ -21,7 +21,7 @@ def get_all_docs():
     logger.info("Starting Facebook crawling")
     fb_since = solr.get_facebook_last_date()
     fb_limit = 0 if fb_since else config.settings.FACEBOOK_INITIAL_LIMIT_PER_PAGE
-    yield from facebook.get_all_docs(limit=fb_limit, since=fb_since)
+    yield from facebook.get_all_docs(limit=1, since=fb_since)
     logger.info("Facebook crawling ended")
 
     # Process all tweets from TWITTER
@@ -29,14 +29,14 @@ def get_all_docs():
     logger.info("Starting Twitter crawling")
     tw_since = solr.get_twitter_last_id()
     tw_limit = 0 if tw_since else config.settings.TWITTER_INITIAL_LIMIT
-    yield from twitter.get_all_docs(limit=tw_limit, since_id=tw_since)
+    yield from twitter.get_all_docs(limit=1, since_id=tw_since)
     logger.info("Twitter crawling ended")
 
     # Process all entries from RSSs
     logger.info("Starting RSS crawling")
     rss_since = solr.get_rss_last_date()
     rss_limit = 0 if rss_since else config.settings.RSS_INITIAL_LIMIT_PER_PAGE
-    yield from rss.get_all_docs(limit=rss_limit, since=rss_since)
+    yield from rss.get_all_docs(limit=1, since=rss_since)
     logger.info("RSS crawling ended")
 
 

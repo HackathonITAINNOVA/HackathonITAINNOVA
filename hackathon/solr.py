@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class Solr(object):
-    URI = config.settings.SOLR_URL + config.settings.SOLR_COLLECTION
+    URI = config.private.SOLR_URL + config.private.SOLR_COLLECTION
 
     def __init__(self):
         self.solr = pysolr.Solr(self.URI, timeout=10)
