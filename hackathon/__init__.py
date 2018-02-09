@@ -1,4 +1,4 @@
-from .main import process_all_docs, periodic_task, solr
+from .main import process_all_docs, periodic_task, solr, twitter, facebook
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -12,7 +12,8 @@ if not os.path.exists("logs/"):
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-BASIC_FORMAT = '%(asctime)s - %(levelname)-8s %(name)-20s > %(message)s'
+# BASIC_FORMAT = '%(asctime)s - %(levelname)-8s %(name)-20s > %(message)s'
+BASIC_FORMAT = '%(asctime)s - %(levelname)-8s > %(message)s    (%(name)s.%(funcName)s:%(lineno)d)'
 console_formatter = logging.Formatter(BASIC_FORMAT, '%H:%M:%S')
 file_formatter = logging.Formatter(BASIC_FORMAT)
 

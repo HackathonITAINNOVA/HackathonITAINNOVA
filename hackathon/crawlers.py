@@ -15,10 +15,12 @@ class Facebook(object):
     APP_ID = config.private.FB_APP_ID
     APP_SECRET = config.private.FB_APP_SECRET
     ACCESS_TOKEN = config.private.FB_ACCESS_TOKEN
-    DEFAULT_FIELDS = 'link,description,message,permalink_url,created_time,reactions,shares,from,parent_id'
+    DEFAULT_FIELDS = 'link,description,message,permalink_url,created_time,reactions.summary(1),shares,from,parent_id'
+    REACTIONS_TYPE = ('LOVE', 'HAHA', 'LIKE', 'SAD', 'ANGRY', 'WOW')
 
     def __init__(self):
         self.api = facebook.GraphAPI(self.ACCESS_TOKEN, version='2.7')
+        self.me = self.api.get_object('me', fields='name,link')
 
     def _get_all_connections(self, id, connection_name, limit=10, **kwargs):
         """Get all pages from a get_connections call
@@ -40,7 +42,7 @@ class Facebook(object):
             del args['access_token']
 
     def get_interests(self):
-        likes = self._get_all_connections('me', 'likes')
+        likes = self._get_all_connections('me', 'likes', limit=0, fields='name,link')
         return likes
 
     def get_feed(self, id, **kwargs):
@@ -58,9 +60,8 @@ class Facebook(object):
                     logger.info("Post without text discarded")
 
     def get_docs_from_home_feed(self, **kwargs):
-        me = self.api.get_object('me')
         for post in self.get_feed('me', **kwargs):
-            document = self.build_document(me, post, type='profile')
+            document = self.build_document(self.me, post, type='profile')
             # Only return document if text is not empty
             if document['text']:
                 yield document
@@ -71,20 +72,23 @@ class Facebook(object):
         yield from self.get_docs_from_interests(**kwargs)
         yield from self.get_docs_from_home_feed(**kwargs)
 
-    @classmethod
-    def build_document(cls, page, post, **kwargs):
+    def build_document(self, page, post, **kwargs):
         logger.info("Processing fb post " + post['id'])
         logger.debug(post)
+
+        text = remove_urls((post.get('message', "") + " " + post.get('description', "").replace("\n", " ")))
+
         doc = {
             'documentID': 'FB_' + post['id'],
             'collectorID': 'facebook',
 
             'sourceId': page['id'],
             'sourceName': page['name'],
+            'sourceUrl': page['link'],
 
-            'text': remove_urls((post.get('message', '') + post.get('description', '')).replace("\n", " ")),
+            'text': text,
 
-            'createdAt': cls.format_date(post['created_time']),
+            'createdAt': self.format_date(post['created_time']),
             'url': post['permalink_url'],
             'postID': post['id'],
             'postUserId': post['from']['id'] if 'from' in post else '',
@@ -92,31 +96,28 @@ class Facebook(object):
 
             'links': post.get('link'),
             'shares': post['shares']['count'] if 'shares' in post else 0,
-            'isShared': bool(post.get('parent_id'))
+            'isShared': bool(post.get('parent_id')),
+            'hashtagEntities': get_hashtags(text),
+            'popularity': post['reactions']['summary']['total_count'],
         }
-        doc['hashtagEntities'] = get_hashtags(doc['text'])
-        doc.update(cls.count_reactions(post))
+
+        doc.update(self.count_all_reactions(post['id']))
         doc.update(kwargs)
 
         logger.debug("Finished building document " + doc['documentID'])
         logger.debug(doc)
         return doc
 
-    @staticmethod
-    def count_reactions(post):
-        counter = {
-            "LOVE": 0,
-            "HAHA": 0,
-            "LIKE": 0,
-            "SAD": 0,
-            "ANGRY": 0,
-            "WOW": 0
-        }
-        if 'reactions' in post:
-            for reaction in post["reactions"]["data"]:
-                counter[reaction["type"]] += 1
-        counter['popularity'] = sum(counter.values())
-        return counter
+    def count_reactions_by_type(self, post_id, reaction_type):
+        fields = 'reactions.type({}).summary(1)'.format(reaction_type)
+        return self.api.get_object(post_id, fields=fields)['reactions']['summary']['total_count']
+
+    def count_all_reactions(self, post_id):
+        logger.info("Counting reactions")
+        reactions = {key: self.count_reactions_by_type(post_id, key)
+                     for key in self.REACTIONS_TYPE}
+        logger.debug(reactions)
+        return reactions
 
     @staticmethod
     def format_date(date):
@@ -145,14 +146,24 @@ class Twitter(object):
     def build_document(cls, username, tweet):
         logger.info("Processing tweet " + tweet['id_str'])
         logger.debug(tweet)
+
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         texts = [tweet['text']] + [clean_url(link) for link in links]
+        isShared = 'retweeted_status' in tweet
+
+        sourceId = tweet['user']['screen_name']
+        sourceName = tweet['user']['name']
+
         doc = {
             'documentID': 'TW_' + tweet['id_str'],
             'collectorID': 'twitter',
 
-            'sourceId': tweet['retweeted_status']['user']['screen_name'] if tweet['retweeted'] else '',
-            'sourceName': tweet['retweeted_status']['user']['name'] if tweet['retweeted'] else '',
+            'sourceId': sourceId,
+            'sourceName': sourceName,
+            'sourceUrl': 'https://twitter.com/' + sourceId,
+
+            'postUserId': tweet['retweeted_status']['user']['screen_name'] if isShared else sourceId,
+            'postUserName': tweet['retweeted_status']['user']['name'] if isShared else sourceName,
 
             'text': ". ".join(remove_urls(text) for text in texts),
 
@@ -163,11 +174,13 @@ class Twitter(object):
             'postUserName': tweet['user']['name'],
 
             'links': links,
-            'hashtagEntities': [hashtag['text'] for hashtag in tweet['entities']['hashtags']],
-            'isShared': tweet['retweeted']
-        }
+            'LIKES': tweet.get('favorite_count', 0),
+            'shares': tweet.get('retweet_count', 0),
 
-        doc['type'] = 'profile' if doc['postUserId'] == username else 'interest'
+            'hashtagEntities': [hashtag['text'] for hashtag in tweet['entities']['hashtags']],
+            'isShared': isShared,
+            'type': 'profile' if sourceId == username else 'interest',
+        }
 
         logger.debug("Finished building document " + doc['documentID'])
         logger.debug(doc)
@@ -209,16 +222,31 @@ class RSS(object):
     @classmethod
     def build_document(cls, feed, entry):
         logger.info("Processing feed {}: {}".format(feed.title, entry.title))
-        logger.debug(entry.summary)
+        logger.debug(entry)
+
+        date = None
+        if 'published_parsed' in entry:
+            date = entry.published_parsed
+        elif 'updated_parsed' in entry:
+            date = entry.updated_parsed
+        createdAt = datetime(*date[:6]) if date else datetime.now()
+
+        text = entry.content[0].value if 'content' in entry else entry.summary
+
+        domain = get_domain(feed.link)
+
         doc = {
             'documentID': 'RSS_' + entry.get('id', entry.link),
             'collectorID': 'rss',
 
-            'sourceId': get_domain(feed.link),
-            'sourceName': feed.title,
+            'sourceId': domain,
+            'sourceName': domain,
+            'sourceUrl': feed.link,
 
-            'text': remove_html_tags(entry.content[0].value if 'content' in entry else entry.summary),
+            'text': remove_html_tags(text),
+            'textRaw': text,
 
+            'createdAt': createdAt,
             'url': entry.link,
             'postID': entry.get('id', entry.link),
             'postUserId': entry.get('author', ''),
@@ -228,14 +256,6 @@ class RSS(object):
             'links': [link['href'] for link in entry.links if link['type'] == 'text/html']
             # 'links': [link['href'] for link in entry.links[1:] if link['type'] == 'text/html']
         }
-
-        date = None
-        if 'published_parsed' in entry:
-            date = entry.published_parsed
-        elif 'updated_parsed' in entry:
-            date = entry.updated_parsed
-
-        doc['createdAt'] = datetime(*date[:6]) if date else datetime.now()
 
         logger.debug("Finished building document " + doc['documentID'])
         logger.debug(doc)

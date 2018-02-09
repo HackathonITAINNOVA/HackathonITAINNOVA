@@ -15,35 +15,36 @@ solr = Solr()
 rss = RSS()
 
 
-def get_all_docs():
+def get_all_docs(from_fb, from_tw, from_rss):
     # # Process all post from FACEBOOK
     # # limit => post per page
-    logger.info("Starting Facebook crawling")
-    fb_since = solr.get_facebook_last_date()
-    fb_limit = 0 if fb_since else config.settings.FACEBOOK_INITIAL_LIMIT_PER_PAGE
-    yield from facebook.get_all_docs(limit=fb_limit, since=fb_since)
-    logger.info("Facebook crawling ended")
+    if from_fb:
+        logger.info("Starting Facebook crawling")
+        fb_since = solr.get_facebook_last_date()
+        fb_limit = 0 if fb_since else config.settings.FACEBOOK_INITIAL_LIMIT_PER_PAGE
+        yield from facebook.get_all_docs(limit=fb_limit, since=fb_since)
+        logger.info("Facebook crawling ended")
 
     # Process all tweets from TWITTER
     # limit => total tweets
-    logger.info("Starting Twitter crawling")
-    tw_since = solr.get_twitter_last_id()
-    tw_limit = 0 if tw_since else config.settings.TWITTER_INITIAL_LIMIT
-    yield from twitter.get_all_docs(limit=tw_limit, since_id=tw_since)
-    logger.info("Twitter crawling ended")
+    if from_tw:
+        logger.info("Starting Twitter crawling")
+        tw_since = solr.get_twitter_last_id()
+        tw_limit = 0 if tw_since else config.settings.TWITTER_INITIAL_LIMIT
+        yield from twitter.get_all_docs(limit=tw_limit, since_id=tw_since)
+        logger.info("Twitter crawling ended")
 
     # Process all entries from RSSs
-    logger.info("Starting RSS crawling")
-    rss_since = solr.get_rss_last_date()
-    rss_limit = 0 if rss_since else config.settings.RSS_INITIAL_LIMIT_PER_PAGE
-    yield from rss.get_all_docs(limit=rss_limit, since=rss_since)
-    logger.info("RSS crawling ended")
+    if from_rss:
+        logger.info("Starting RSS crawling")
+        rss_since = solr.get_rss_last_date()
+        rss_limit = 0 if rss_since else config.settings.RSS_INITIAL_LIMIT_PER_PAGE
+        yield from rss.get_all_docs(limit=rss_limit, since=rss_since)
+        logger.info("RSS crawling ended")
 
 
-def process_all_docs():
-    for document in get_all_docs():
-        # response = {}
-        # if True:
+def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
+    for document in get_all_docs(from_fb, from_tw, from_rss):
         response = call_WF2(document['text'])
         if response:
             document.update(response)

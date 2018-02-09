@@ -12,14 +12,14 @@ TEXTO_PRUEBA = ("El oeste de Texas divide la frontera entre Mexico y Nuevo Méxi
                 "florecen las plantas del desierto con la humedad en el aire.")
 
 if __name__ == '__main__':
-    # hackathon.process_all_docs()
+    # hackathon.process_all_docs(from_fb=True, from_tw=True, from_rss=True)
 
     # print("Task going to sleep")
-    # time.sleep(60 * 60)
+    # time.sleep(3 * 60 * 60)
 
     # print("Task awoken")
     # hackathon.solr.delete_all()
 
-    # hackathon.periodic_task()
+    hackathon.periodic_task()
 
-    hackathon.call_WF.call_WF2(TEXTO_PRUEBA)
+    # print(hackathon.call_WF.call_WF2(TEXTO_PRUEBA))
