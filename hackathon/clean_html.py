@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import re
 import requests
-# from call_WF import *
 
 from . import config
 import logging
@@ -39,7 +38,7 @@ def delete_styles(soup, styles):
             t.extract()
 
 
-def clean_url(url):
+def fetch_url(url):
     text = None
     logger.debug("Requesting html from ulr " + url)
     try:
@@ -51,12 +50,12 @@ def clean_url(url):
     except requests.RequestException:
         logger.exception("Clean html request failed")
     else:
-        text = clean_html(response.text)
+        text = response.text
 
     return text or ""
 
 
-def clean_html(html):
+def filter_html(html):
     text = ""
 
     soup = BeautifulSoup(html, "html.parser")
@@ -72,16 +71,15 @@ def clean_html(html):
             matches.append(p)
 
     for m in matches:
-        aux = remove_html_tags(m.text)
-        if len(aux) > 100:
-            text += aux + " "
+        if len(m.text) > 100:
+            text += m.text + " "
 
     return text
 
 
-def remove_html_tags(raw_html):
+def remove_html_tags(html):
     cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanr, '', raw_html)
+    cleantext = re.sub(cleanr, '', html)
 
     cleantext.replace("\n", " ")
     cleantext.replace("\t", " ")
@@ -101,9 +99,3 @@ def get_hashtags(text):
 def get_domain(url):
     PATTERN = r"^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)"
     return re.match(PATTERN, url)[1]
-
-
-if __name__ == '__main__':
-    url = "http://www.antena3.com/noticias/ciencia/osos-polares-estan-preocupantemente-delgados-problemas-cazar-focas-culpa-cambio-climatico_201802025a7460540cf20e2c8b4ca197.html"
-    text = clean_url(url)
-    print(text)

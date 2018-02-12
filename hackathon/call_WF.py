@@ -17,18 +17,6 @@ TEXT_OPINION_STR = {
 
 
 def call_WF(text):
-    url = SERVER_URL + "5a6880245a93535c9a696f03?wait=true"
-    data = {'NerBoolean': True,
-            'OpinionBoolean': True,
-            'inputTextEntrada': text}
-    data_json = json.dumps(data)
-    headers = {'Content-type': 'application/json'}
-
-    response = requests.post(url, data=data_json, headers=headers)
-    return response.json()
-
-
-def call_WF2(text):
     endpoint = SERVER_URL + config.settings.MORIARTY_WORKFLOW + '?wait=true'
 
     wordsMin = 10
@@ -79,6 +67,8 @@ def call_WF2(text):
                     'textProcessed': results.get('textProcessed'),
                     'categories': results.get('categories')
                 }
+            else:
+                logger.warning("Text not in spanish")
         except KeyError:
             logger.error("Moriarty failed")
             logger.error(response.json()['message'])

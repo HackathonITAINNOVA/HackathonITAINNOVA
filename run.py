@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # hackathon.process_all_docs(from_fb=True, from_tw=True, from_rss=True)
 
     # print("Task going to sleep")
-    # time.sleep(3 * 60 * 60)
+    # time.sleep(1 * 60 * 60)
 
     # print("Task awoken")
     # hackathon.solr.delete_all()

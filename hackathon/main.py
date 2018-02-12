@@ -1,6 +1,6 @@
 from .crawlers import Facebook, Twitter, RSS
 from .solr import Solr
-from .call_WF import call_WF2
+from .call_WF import call_WF
 import time
 from datetime import datetime
 
@@ -45,7 +45,7 @@ def get_all_docs(from_fb, from_tw, from_rss):
 
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
     for document in get_all_docs(from_fb, from_tw, from_rss):
-        response = call_WF2(document['text'])
+        response = call_WF(document['text'])
         if response:
             document.update(response)
             logger.debug(document)
@@ -61,7 +61,10 @@ def periodic_task():
     logger.info("Task starting")
 
     while True:
-        process_all_docs()
+        try:
+            process_all_docs()
+        except:
+            logger.exception("FATAL ERROR, process stopped")
 
         logger.info("Task going to sleep")
         logger.info("Next iteration: {}".format(datetime.fromtimestamp(next_task).ctime()))

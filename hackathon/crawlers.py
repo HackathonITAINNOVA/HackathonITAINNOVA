@@ -5,7 +5,7 @@ import tweepy
 from datetime import datetime
 import feedparser
 
-from .clean_html import remove_urls, get_hashtags, clean_url, remove_html_tags, get_domain
+from .clean_html import *
 from . import config
 import logging
 logger = logging.getLogger(__name__)
@@ -76,7 +76,8 @@ class Facebook(object):
         logger.info("Processing fb post " + post['id'])
         logger.debug(post)
 
-        text = remove_urls((post.get('message', "") + " " + post.get('description', "").replace("\n", " ")))
+        textRaw = post.get('message', "") + " " + post.get('description', "")
+        text = remove_html_tags(textRaw).replace("\n", " ")
 
         doc = {
             'documentID': 'FB_' + post['id'],
@@ -86,6 +87,7 @@ class Facebook(object):
             'sourceName': page['name'],
             'sourceUrl': page['link'],
 
+            'textRaw': textRaw,
             'text': text,
 
             'createdAt': self.format_date(post['created_time']),
@@ -148,7 +150,10 @@ class Twitter(object):
         logger.debug(tweet)
 
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
-        texts = [tweet['text']] + [clean_url(link) for link in links]
+        texts = [tweet['text']] + [filter_html(fetch_url(link)) for link in links]
+        textRaw = ". ".join(texts)
+        text = remove_html_tags(textRaw).replace("\n", " ")
+
         isShared = 'retweeted_status' in tweet
 
         sourceId = tweet['user']['screen_name']
@@ -165,7 +170,8 @@ class Twitter(object):
             'postUserId': tweet['retweeted_status']['user']['screen_name'] if isShared else sourceId,
             'postUserName': tweet['retweeted_status']['user']['name'] if isShared else sourceName,
 
-            'text': ". ".join(remove_urls(text) for text in texts),
+            'textRaw': textRaw,
+            'text': text,
 
             'createdAt': cls.format_date(tweet['created_at']),
             'url': 'https://twitter.com/' + tweet["user"]["screen_name"] + '/status/' + tweet['id_str'],
@@ -203,9 +209,9 @@ class RSS(object):
 
     def get_all_docs(self, limit, since):
         for source in self.get_sources():
-            logger.info("Source: {}".format(source.href))
-            for count, entry in enumerate(source.entries):
-                logger.info("Entry: {}".format(entry.link))
+            logger.info("Source: {}".format(source.get('href', '')))
+            for count, entry in enumerate(source.get('entries', [])):
+                logger.info("Entry: {}".format(entry.get('link', '')))
 
                 if limit and count == limit:
                     logger.info("Entry discarded by limit")
@@ -221,7 +227,7 @@ class RSS(object):
 
     @classmethod
     def build_document(cls, feed, entry):
-        logger.info("Processing feed {}: {}".format(feed.title, entry.title))
+        logger.info("Processing feed {}: {}".format(feed.get('title'), entry.get('title')))
         logger.debug(entry)
 
         date = None
@@ -231,9 +237,10 @@ class RSS(object):
             date = entry.updated_parsed
         createdAt = datetime(*date[:6]) if date else datetime.now()
 
-        text = entry.content[0].value if 'content' in entry else entry.summary
+        textRaw = entry.content[0].value if 'content' in entry else entry.summary
+        text = remove_html_tags(textRaw).replace("\n", " ")
 
-        domain = get_domain(feed.link)
+        domain = get_domain(feed.get('link', ''))
 
         doc = {
             'documentID': 'RSS_' + entry.get('id', entry.link),
@@ -241,19 +248,19 @@ class RSS(object):
 
             'sourceId': domain,
             'sourceName': domain,
-            'sourceUrl': feed.link,
+            'sourceUrl': feed.get('link', ''),
 
-            'text': remove_html_tags(text),
-            'textRaw': text,
+            'textRaw': textRaw,
+            'text': text,
 
             'createdAt': createdAt,
-            'url': entry.link,
+            'url': entry.get('link', ''),
             'postID': entry.get('id', entry.link),
             'postUserId': entry.get('author', ''),
             'postUserName': entry.get('author', ''),
 
             'hashtagEntities': [tag['term'] for tag in entry.get('tags', [])],
-            'links': [link['href'] for link in entry.links if link['type'] == 'text/html']
+            'links': [link['href'] for link in entry.get('links', []) if link['type'] == 'text/html']
             # 'links': [link['href'] for link in entry.links[1:] if link['type'] == 'text/html']
         }
 

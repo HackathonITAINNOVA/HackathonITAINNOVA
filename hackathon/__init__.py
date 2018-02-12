@@ -32,7 +32,7 @@ info_file_log.setLevel(logging.INFO)
 info_file_log.setFormatter(file_formatter)
 logger.addHandler(info_file_log)
 
-error_file_log = RotatingFileHandler('logs/errors.log', encoding="utf-8", maxBytes=1000000, backupCount=10)
+error_file_log = RotatingFileHandler('logs/error.log', encoding="utf-8", maxBytes=1000000, backupCount=10)
 error_file_log.setLevel(logging.WARNING)
 error_file_log.setFormatter(file_formatter)
 logger.addHandler(error_file_log)
