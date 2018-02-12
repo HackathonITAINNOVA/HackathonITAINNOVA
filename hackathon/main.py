@@ -3,6 +3,7 @@ from .solr import Solr
 from .call_WF import call_WF
 import time
 from datetime import datetime
+import multiprocessing
 
 from . import config
 import logging
@@ -43,17 +44,24 @@ def get_all_docs(from_fb, from_tw, from_rss):
         logger.info("RSS crawling ended")
 
 
+def parallel_task(document):
+    response = call_WF(document['text'])
+    if response:
+        document.update(response)
+        logger.debug(document)
+        solr.insert(document)
+        logger.info("SUCCESS! Document {} inserted in solr".format(document['documentID']))
+    else:
+        logger.warning("FAIL! Document {} NOT inserted in solr".format(document['documentID']))
+
+
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
-    for document in get_all_docs(from_fb, from_tw, from_rss):
-        response = call_WF(document['text'])
-        if response:
-            logger.debug(response)
-            document.update(response)
-            logger.debug(document)
-            solr.insert(document)
-            logger.info("SUCCESS! Document {} inserted in solr".format(document['documentID']))
-        else:
-            logger.warning("FAIL! Document {} NOT inserted in solr".format(document['documentID']))
+    pool = multiprocessing.Pool(4)
+    pool.map(parallel_task,get_all_docs(from_fb, from_tw, from_rss))
+    pool.close()
+    pool.join()
+    # for document in get_all_docs(from_fb, from_tw, from_rss):
+    #     parallel_task(document)
 
 
 def periodic_task():
