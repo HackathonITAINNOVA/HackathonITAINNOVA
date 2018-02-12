@@ -47,6 +47,7 @@ def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
     for document in get_all_docs(from_fb, from_tw, from_rss):
         response = call_WF(document['text'])
         if response:
+            logger.debug(response)
             document.update(response)
             logger.debug(document)
             solr.insert(document)

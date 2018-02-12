@@ -65,7 +65,7 @@ def call_WF(text):
                     'textOpinionStr': TEXT_OPINION_STR[results['opinion']],
                     'summary': results['summarizedText'],
                     'textProcessed': results.get('textProcessed'),
-                    'categories': results.get('categories')
+                    'categories': results.get('categoriesList')
                 }
             else:
                 logger.warning("Text not in spanish")

@@ -77,7 +77,7 @@ class Facebook(object):
         logger.debug(post)
 
         textRaw = post.get('message', "") + " " + post.get('description', "")
-        text = remove_html_tags(textRaw).replace("\n", " ")
+        text = remove_urls(remove_html_tags(textRaw))
 
         doc = {
             'documentID': 'FB_' + post['id'],
@@ -152,7 +152,7 @@ class Twitter(object):
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         texts = [tweet['text']] + [filter_html(fetch_url(link)) for link in links]
         textRaw = ". ".join(texts)
-        text = remove_html_tags(textRaw).replace("\n", " ")
+        text = remove_urls(remove_html_tags(textRaw))
 
         isShared = 'retweeted_status' in tweet
 
@@ -238,7 +238,7 @@ class RSS(object):
         createdAt = datetime(*date[:6]) if date else datetime.now()
 
         textRaw = entry.content[0].value if 'content' in entry else entry.summary
-        text = remove_html_tags(textRaw).replace("\n", " ")
+        text = remove_urls(remove_html_tags(textRaw))
 
         domain = get_domain(feed.get('link', ''))
 
