@@ -8,6 +8,8 @@ MINUTES_BETWEEN_CALLS = 120
 # WFComplete_HackathonITAINNOVA5_new_server
 MORIARTY_WORKFLOW = '5a7d8f3ba7b11b0007f21cd1'
 
+NUM_CONCURRENT_WORKERS = 9
+
 FEEDS_URL = [
     'http://ep00.epimg.net/rss/elpais/portada.xml',
     'http://www.idi.mineco.gob.es/portal/site/MICINN/rssPrensa',
