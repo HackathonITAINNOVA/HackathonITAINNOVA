@@ -45,10 +45,11 @@ def get_all_docs(from_fb, from_tw, from_rss):
 
 
 def parallel_task(document):
-    response = call_WF(document['text'])
+    if document['text']:
+        response = call_WF(document['text'])
     if response:
         document.update(response)
-        logger.debug(document)
+        # logger.debug(document)
         solr.insert(document)
         logger.info("SUCCESS! Document {} inserted in solr".format(document['documentID']))
     else:
@@ -56,7 +57,7 @@ def parallel_task(document):
 
 
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
-    pool = multiprocessing.Pool(4)
+    pool = multiprocessing.Pool(10)
     pool.map(parallel_task,get_all_docs(from_fb, from_tw, from_rss))
     pool.close()
     pool.join()

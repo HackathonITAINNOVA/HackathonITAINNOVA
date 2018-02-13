@@ -180,7 +180,7 @@ class Twitter(object):
             'postUserName': tweet['user']['name'],
 
             'links': links,
-            'LIKES': tweet.get('favorite_count', 0),
+            'popularity': tweet.get('favorite_count', 0),
             'shares': tweet.get('retweet_count', 0),
 
             'hashtagEntities': [hashtag['text'] for hashtag in tweet['entities']['hashtags']],

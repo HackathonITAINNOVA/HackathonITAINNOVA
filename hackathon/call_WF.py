@@ -37,13 +37,13 @@ def call_WF(text):
     headers = {'Content-type': 'application/json'}
 
     try:
-        logger.info("Sending Moriarty post request...")
+        # logger.info("Sending Moriarty post request...")
         response = requests.post(endpoint, data=data_json, headers=headers)
-        logger.debug("Moriarty request response code: {}".format(response.status_code))
+        # logger.debug("Moriarty request response code: {}".format(response.status_code))
 
         response.raise_for_status()
         results = response.json()['results']
-        logger.debug(results)
+        # logger.debug(results)
     except requests.HTTPError:
         logger.exception("Moriarty WF request failed with status code {}".format(response.status_code))
         logger.debug("for text: " + text)
