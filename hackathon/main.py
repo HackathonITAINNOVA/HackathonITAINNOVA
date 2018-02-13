@@ -45,8 +45,7 @@ def get_all_docs(from_fb, from_tw, from_rss):
 
 
 def parallel_task(document):
-    if document['text']:
-        response = call_WF(document['text'])
+    response = call_WF(document['text'])
     if response:
         document.update(response)
         # logger.debug(document)
@@ -58,7 +57,7 @@ def parallel_task(document):
 
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
     pool = multiprocessing.Pool(10)
-    pool.map(parallel_task,get_all_docs(from_fb, from_tw, from_rss))
+    pool.map(parallel_task, get_all_docs(from_fb, from_tw, from_rss))
     pool.close()
     pool.join()
     # for document in get_all_docs(from_fb, from_tw, from_rss):
@@ -78,7 +77,7 @@ def periodic_task():
 
         logger.info("Task going to sleep")
         logger.info("Next iteration: {}".format(datetime.fromtimestamp(next_task).ctime()))
-        time.sleep(next_task - time.time())
+        time.sleep(next_task - time.time() if next_task > time.time() else 0
 
         logger.info("Task awoken")
         next_task += INTERVAL

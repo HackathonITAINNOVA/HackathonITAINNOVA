@@ -223,7 +223,8 @@ class RSS(object):
                     logger.info("Entry discarded by date")
                     break
 
-                yield document
+                if document['text']:
+                    yield document
 
     @classmethod
     def build_document(cls, feed, entry):

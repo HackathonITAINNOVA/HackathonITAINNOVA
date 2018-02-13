@@ -11,6 +11,7 @@ if not os.path.exists("logs/"):
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+print("logging")
 
 # BASIC_FORMAT = '%(asctime)s - %(levelname)-8s %(name)-20s > %(message)s'
 BASIC_FORMAT = '%(asctime)s - %(levelname)-8s > %(message)s    (%(name)s.%(funcName)s:%(lineno)d)'
