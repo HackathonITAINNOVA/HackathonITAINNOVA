@@ -56,7 +56,7 @@ def parallel_task(document):
 
 
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
-    pool = multiprocessing.Pool(10)
+    pool = multiprocessing.Pool(config.settings.NUM_CONCURRENT_WORKERS)
     pool.map(parallel_task, get_all_docs(from_fb, from_tw, from_rss))
     pool.close()
     pool.join()
