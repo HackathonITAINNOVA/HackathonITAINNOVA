@@ -268,9 +268,3 @@ class RSS(object):
         logger.debug("Finished building document " + doc['documentID'])
         logger.debug(doc)
         return doc
-
-
-if __name__ == '__main__':
-    tw = Twitter()
-    fb = Facebook()
-    rss = RSS()

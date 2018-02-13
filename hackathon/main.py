@@ -1,6 +1,8 @@
 from .crawlers import Facebook, Twitter, RSS
 from .solr import Solr
 from .call_WF import call_WF
+from .multi import paralelize
+
 import time
 from datetime import datetime
 from multiprocessing.dummy import Pool as ThreadPool
@@ -42,34 +44,30 @@ def get_all_docs(from_fb, from_tw, from_rss):
         logger.info("RSS crawling ended")
 
 
-def parallel_task(document):
-    response = call_WF(document['text'])
-    if response:
-        document.update(response)
-        logger.debug(document)
-        solr.insert(document)
-        logger.info("SUCCESS! Document {} inserted in solr".format(document['documentID']))
-    else:
-        logger.warning("FAIL! Document {} NOT inserted in solr".format(document['documentID']))
-
-
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
-    pool = ThreadPool(config.settings.NUM_CONCURRENT_WORKERS)
-    # imap uses correctly the generator, is more memory efficient
-    pool.imap_unordered(parallel_task, get_all_docs(from_fb, from_tw, from_rss))
-    pool.close()
-    pool.join()
 
+    def parallel_task(document):
+        response = call_WF(document['text'])
+        if response:
+            document.update(response)
+            logger.debug(document)
+            solr.insert(document)
+            logger.info("SUCCESS! Document {} inserted in solr".format(document['documentID']))
+        else:
+            logger.warning("FAIL! Document {} NOT inserted in solr".format(document['documentID']))
 
-def sleep_until(unix_time):
-    interval = unix_time - time.time()
-    if interval > 0:
-        time.sleep(interval)
+    paralelize(parallel_task, get_all_docs(from_fb, from_tw, from_rss))
 
 
 def periodic_task():
     INTERVAL = config.settings.MINUTES_BETWEEN_CALLS * 60
     next_task = time.time() + INTERVAL
+
+    def sleep_until(unix_time):
+        interval = unix_time - time.time()
+        if interval > 0:
+            time.sleep(interval)
+
     logger.info("Task starting")
 
     while True:
