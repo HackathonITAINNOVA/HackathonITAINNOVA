@@ -86,6 +86,15 @@ def remove_html_tags(html):
     return re.sub(r'\s+', ' ', cleantext)
 
 
+def parse_link(url):
+    return '<br><p class="alert,alert-info">{}</p>'.format(filter_html(fetch_url(url)))
+
+
+def get_urls(text):
+    PATTERN = r"http\S+"
+    return [match for match in re.findall(PATTERN, text)]
+
+
 def remove_urls(text):
     PATTERN = r"http\S+"
     return re.sub(PATTERN, '', text)

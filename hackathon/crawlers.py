@@ -76,7 +76,10 @@ class Facebook(object):
         logger.info("Processing fb post " + post['id'])
         logger.debug(post)
 
-        textRaw = post.get('message', "") + " " + post.get('description', "")
+        textPost = post.get('message', "")
+        links = get_urls(textPost)
+        texts = [textPost] + [parse_link(link) for link in links]
+        textRaw = ". ".join(texts) or post.get('description', '')
         text = remove_urls(remove_html_tags(textRaw))
 
         doc = {
@@ -89,6 +92,7 @@ class Facebook(object):
 
             'textRaw': textRaw,
             'text': text,
+            'textSentiment': textPost,
 
             'createdAt': self.format_date(post['created_time']),
             'url': post['permalink_url'],
@@ -150,7 +154,8 @@ class Twitter(object):
         logger.debug(tweet)
 
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
-        texts = [tweet['text']] + [filter_html(fetch_url(link)) for link in links]
+        textTweet = tweet['text']
+        texts = [textTweet] + [parse_link(link) for link in links]
         textRaw = ". ".join(texts)
         text = remove_urls(remove_html_tags(textRaw))
 
@@ -172,6 +177,7 @@ class Twitter(object):
 
             'textRaw': textRaw,
             'text': text,
+            'textSentiment': textTweet,
 
             'createdAt': cls.format_date(tweet['created_at']),
             'url': 'https://twitter.com/' + tweet["user"]["screen_name"] + '/status/' + tweet['id_str'],
@@ -253,6 +259,7 @@ class RSS(object):
 
             'textRaw': textRaw,
             'text': text,
+            'textSentiment': text,
 
             'createdAt': createdAt,
             'url': entry.get('link', ''),

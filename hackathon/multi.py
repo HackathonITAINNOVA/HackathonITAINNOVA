@@ -6,28 +6,42 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def paralelize(consumer, producer):
-    """ Implements a queued production of items to paralelize, limits RAM usage.
+class Pool(object):
 
-    Args:
-        consumer (function): Ingest and process items
-        producer (generator): Yields items to be consumed
-    """
-    logger.info("Starting paralelization")
-    pool = ThreadPool(config.settings.NUM_CONCURRENT_WORKERS)
-    semaphore = Semaphore(config.settings.QUEUE_SIZE)
+    def __init__(self):
+        self.pool = ThreadPool(config.settings.NUM_CONCURRENT_WORKERS)
+        self.semaphore = Semaphore(config.settings.QUEUE_SIZE)
 
-    def producer_queued():
+    def queue_producer(self, producer):
+        """Yields items as soon as the semaphore allows."""
         for item in producer:
-            semaphore.acquire()
+            self.semaphore.acquire()
             yield item
 
-    def consumer_queued(item):
-        semaphore.release()
-        return consumer(item)
+    def queue_consumer(self, consumer):
+        """Returns item consumption function that signals the semaphore."""
 
-    # imap uses correctly the generator, is more memory efficient
-    pool.imap_unordered(consumer_queued, producer_queued())
-    logger.info("Finishing paralelization")
-    pool.close()
-    pool.join()
+        def consumer_function(item):
+            self.semaphore.release()
+            try:
+                consumer(item)
+            except:
+                logger.exception("Error in parallel task consumer")
+
+        return consumer_function
+
+    def parallelize(self, consumer, producer):
+        """Implements a queued production of items to paralelize, limits RAM usage.
+        imap() uses correctly the generator, is more memory efficient
+        imap_unordered() does not wait on each item to be processed
+
+        Args:
+            consumer (function): Ingest and process items
+            producer (generator): Yields items to be consumed
+        """
+        logger.info("Starting paralelization")
+
+        self.pool.imap_unordered(self.queue_consumer(consumer), self.queue_producer(producer))
+        self.pool.close()
+        self.pool.join()
+        logger.info("Finishing paralelization")

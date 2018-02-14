@@ -1,11 +1,10 @@
 from .crawlers import Facebook, Twitter, RSS
 from .solr import Solr
 from .call_WF import call_WF
-from .multi import paralelize
+from .multi import Pool
 
 import time
 from datetime import datetime
-from multiprocessing.dummy import Pool as ThreadPool
 
 from . import config
 import logging
@@ -14,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 facebook = Facebook()
 twitter = Twitter()
-solr = Solr()
 rss = RSS()
+solr = Solr()
+pool = Pool()
 
 
 def get_all_docs(from_fb, from_tw, from_rss):
@@ -47,7 +47,8 @@ def get_all_docs(from_fb, from_tw, from_rss):
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
 
     def parallel_task(document):
-        response = call_WF(document['text'])
+        logger.debug(document)
+        response = call_WF(document['text'], document['textSentiment'])
         if response:
             document.update(response)
             logger.debug(document)
@@ -56,7 +57,7 @@ def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
         else:
             logger.warning("FAIL! Document {} NOT inserted in solr".format(document['documentID']))
 
-    paralelize(parallel_task, get_all_docs(from_fb, from_tw, from_rss))
+    pool.parallelize(parallel_task, get_all_docs(from_fb, from_tw, from_rss))
 
 
 def periodic_task():

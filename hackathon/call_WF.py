@@ -16,7 +16,7 @@ TEXT_OPINION_STR = {
 }
 
 
-def call_WF(text):
+def call_WF(text, textSentiment):
     endpoint = SERVER_URL + config.settings.MORIARTY_WORKFLOW + '?wait=true'
 
     wordsMin = 10
@@ -31,7 +31,8 @@ def call_WF(text):
         'wordsMin': wordsMin,
         'wordsMax': wordsMax,
         'algorithm': 'rank',
-        'inputTextEntrada': text
+        'text': text,
+        'textSentiment': textSentiment
     }
     data_json = json.dumps(data)
     headers = {'Content-type': 'application/json'}
@@ -46,13 +47,16 @@ def call_WF(text):
         logger.debug(results)
     except requests.HTTPError:
         logger.exception("Moriarty WF request failed with status code {}".format(response.status_code))
-        logger.debug("for text: " + text)
+        logger.error("text: \t{}".format(text))
+        logger.error("textSentiment: \t{}".format(textSentiment))
     except requests.ConnectionError as e:
         logger.error("Moriarty WF request failed: {}".format(e))
     except requests.RequestException:
         logger.exception("Moriarty WF request failed")
     except TypeError:
         logger.error("Moriarty WF results json parse failed")
+        logger.error("text: \t{}".format(text))
+        logger.error("textSentiment: \t{}".format(textSentiment))
         logger.error(response.text)
     else:
         try:
@@ -61,8 +65,8 @@ def call_WF(text):
                     'places': results['localizacionesList'],
                     'organizations': results['organizacionesList'],
                     'people': results['personasList'],
-                    'textOpinion': results['opinion'],
-                    'textOpinionStr': TEXT_OPINION_STR[results['opinion']],
+                    'textOpinion': results.get('opinion', "0.0"),
+                    'textOpinionStr': TEXT_OPINION_STR[results.get('opinion', "0.0")],
                     'summary': results['summarizedText'],
                     'textProcessed': results.get('textProcessed'),
                     'categories': results.get('categoriesList')
@@ -72,3 +76,6 @@ def call_WF(text):
         except KeyError:
             logger.error("Moriarty failed")
             logger.error(response.json()['message'])
+            logger.error("text: \t{}".format(text))
+            logger.error("textSentiment: \t{}".format(textSentiment))
+            logger.error("response: \t{}".format(results))
