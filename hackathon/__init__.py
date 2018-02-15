@@ -6,8 +6,13 @@ from logging.handlers import RotatingFileHandler
 import os
 import os.path
 
-if not os.path.exists("logs/"):
-    os.makedirs("logs/")
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+if not os.path.exists(LOGGING_FOLDER):
+    os.makedirs(LOGGING_FOLDER)
+
+LOG_PATH_TEMPLATE = LOGGING_FOLDER + "{}.log"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

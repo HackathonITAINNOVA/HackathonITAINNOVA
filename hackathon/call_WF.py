@@ -55,8 +55,6 @@ def call_WF(text, textSentiment):
         logger.exception("Moriarty WF request failed")
     except TypeError:
         logger.error("Moriarty WF results json parse failed")
-        logger.error("text: \t{}".format(text))
-        logger.error("textSentiment: \t{}".format(textSentiment))
         logger.error(response.text)
     else:
         try:
@@ -76,6 +74,4 @@ def call_WF(text, textSentiment):
         except KeyError:
             logger.error("Moriarty failed")
             logger.error(response.json()['message'])
-            logger.error("text: \t{}".format(text))
-            logger.error("textSentiment: \t{}".format(textSentiment))
-            logger.error("response: \t{}".format(results))
+            logger.error("results: \t{}".format(results))

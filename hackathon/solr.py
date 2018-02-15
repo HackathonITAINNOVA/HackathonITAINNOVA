@@ -1,4 +1,5 @@
 import pysolr
+# import pysolr.SolrError
 from . import config
 
 
@@ -32,7 +33,10 @@ class Solr(object):
 
     def insert(self, doc):
         doc["date"] = "NOW"
-        self.solr.add([doc])
+        try:
+            self.solr.add([doc])
+        except pysolr.SolrError:
+            logger.exception("Insertion failed")
 
     def get_last_value(self, query, value):
         search = self.solr.search(q=query, sort=value + ' desc', fl=value, rows=1)

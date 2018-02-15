@@ -87,7 +87,9 @@ def remove_html_tags(html):
 
 
 def parse_link(url):
-    return '<br><p class="alert,alert-info">{}</p>'.format(filter_html(fetch_url(url)))
+    """Gives the parsed content a quoted style."""
+    text = filter_html(fetch_url(url))
+    return '<p class="alert alert-info">{}</p>'.format(text) if text else ""
 
 
 def get_urls(text):

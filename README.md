@@ -12,6 +12,12 @@ NLP core services developed over our platform [Moriarty](http://www.ita.es/moria
 Data intake from Facebook, Twitter and RSS.
 Published Python code gets user's social networks information, invokes NLP services and store results in Solr.
 
+#### Python dependencies
+* (facebook)[https://github.com/mobolic/facebook-sdk]
+* (tweepy)[https://github.com/tweepy/tweepy]
+* (feedparser)[https://github.com/kurtmckee/feedparser]
+* (pysolr)[https://github.com/django-haystack/pysolr]
+
 ### WebApp
 User interface.
 

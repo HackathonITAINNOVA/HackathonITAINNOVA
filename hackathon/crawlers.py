@@ -79,7 +79,7 @@ class Facebook(object):
         textPost = post.get('message', "")
         links = get_urls(textPost)
         texts = [textPost] + [parse_link(link) for link in links]
-        textRaw = ". ".join(texts) or post.get('description', '')
+        textRaw = "<br>".join(texts) or post.get('description', "")
         text = remove_urls(remove_html_tags(textRaw))
 
         doc = {
@@ -156,7 +156,7 @@ class Twitter(object):
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         textTweet = tweet['text']
         texts = [textTweet] + [parse_link(link) for link in links]
-        textRaw = ". ".join(texts)
+        textRaw = " <br>".join(texts)
         text = remove_urls(remove_html_tags(textRaw))
 
         isShared = 'retweeted_status' in tweet
