@@ -10,6 +10,9 @@ QUEUE_SIZE = 100  # Limits RAM usage
 
 # WFComplete_HackathonITAINNOVA5_new_server
 MORIARTY_WORKFLOW = '5a844780a7b11b000829a134'
+MORIARTY_TIMEOUT = 300  # seconds
+
+LOGGING_FOLDER = 'logs/'
 
 
 FEEDS_URL = [

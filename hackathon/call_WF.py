@@ -39,7 +39,8 @@ def call_WF(text, textSentiment):
 
     try:
         logger.info("Sending Moriarty post request...")
-        response = requests.post(endpoint, data=data_json, headers=headers)
+        response = requests.post(endpoint, data=data_json, headers=headers,
+                                 timeout=config.settings.MORIARTY_TIMEOUT)
         logger.debug("Moriarty request response code: {}".format(response.status_code))
 
         response.raise_for_status()
