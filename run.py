@@ -11,6 +11,7 @@ TEXTO_PRUEBA = ("El oeste de Texas divide la frontera entre Mexico y Nuevo Méxi
                 "para visitarla es de Diciembre a Marzo cuando los dias son tibios, las noches son frescas y "
                 "florecen las plantas del desierto con la humedad en el aire.")
 
+
 if __name__ == '__main__':
     # hackathon.process_all_docs(from_fb=True, from_tw=True, from_rss=True)
 
@@ -21,4 +22,4 @@ if __name__ == '__main__':
 
     hackathon.periodic_task()
 
-    # print(hackathon.call_WF.call_WF2(TEXTO_PRUEBA))
+    # print(hackathon.call_WF.call_WF(TEXTO_PRUEBA, TEXTO_PRUEBA))

@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 class Pool(object):
 
     def __init__(self):
-        self.pool = ThreadPool(config.settings.NUM_CONCURRENT_WORKERS)
         self.semaphore = Semaphore(config.settings.QUEUE_SIZE)
 
     def queue_producer(self, producer):
@@ -26,7 +25,7 @@ class Pool(object):
             try:
                 consumer(item)
             except:
-                logger.exception("Error in parallel task consumer")
+                logger.exception("Error in consumer parallel task")
 
         return consumer_function
 
@@ -41,7 +40,11 @@ class Pool(object):
         """
         logger.info("Starting paralelization")
 
+        self.pool = ThreadPool(config.settings.NUM_CONCURRENT_WORKERS)
+
         self.pool.imap_unordered(self.queue_consumer(consumer), self.queue_producer(producer))
+
         self.pool.close()
         self.pool.join()
+
         logger.info("Finishing paralelization")
