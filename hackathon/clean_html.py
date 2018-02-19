@@ -16,6 +16,10 @@ WORDS = ["image", "img", "footer", "pie", "banner", "autoria",
 
 STYLES = ["text-align: center", "display: none"]
 
+URL_REGEX = re.compile(r'http:\S+\b')
+HASHTAG_REGEX = re.compile(r'#(\S+)\b')
+TWITTER_USER_REGEX = re.compile(r'@(\S+)\b')
+
 
 def delete_attrs(soup, words):
     for word in words:
@@ -93,18 +97,31 @@ def parse_link(url):
 
 
 def get_urls(text):
-    PATTERN = r"http\S+"
-    return [match for match in re.findall(PATTERN, text)]
+    return [match for match in URL_REGEX.findall(text)]
 
 
 def remove_urls(text):
-    PATTERN = r"http\S+"
-    return re.sub(PATTERN, '', text)
+    return URL_REGEX.sub('', text)
+
+
+def linkify_urls(text):
+    return URL_REGEX.sub('<a href="\g<0>">\g<0></a>', text)
 
 
 def get_hashtags(text):
-    PATTERN = r"#\S+"
-    return re.findall(PATTERN, text)
+    return HASHTAG_REGEX.findall(text)
+
+
+def linkify_hashtags(text, source):
+    if source == 'facebook':
+        link = 'https://www.facebook.com/hashtag/'
+    if source == 'twitter':
+        link = 'https://twitter.com/hashtag/'
+    return HASHTAG_REGEX.sub('<a href="{}\g<1>">\g<0></a>'.format(link), text)
+
+
+def linkify_twitter_users(text):
+    return TWITTER_USER_REGEX.sub('<a href="https://twitter.com/\g<1>">\g<0></a>', text)
 
 
 def get_domain(url):

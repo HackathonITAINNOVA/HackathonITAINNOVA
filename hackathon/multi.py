@@ -13,9 +13,12 @@ class Pool(object):
 
     def queue_producer(self, producer):
         """Yields items as soon as the semaphore allows."""
-        for item in producer:
-            self.semaphore.acquire()
-            yield item
+        try:
+            for item in producer:
+                self.semaphore.acquire()
+                yield item
+        except:
+            logger.exception("Error in producer parallel task")
 
     def queue_consumer(self, consumer):
         """Returns item consumption function that signals the semaphore."""

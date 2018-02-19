@@ -78,9 +78,13 @@ class Facebook(object):
 
         textPost = post.get('message', "")
         links = get_urls(textPost)
-        texts = [textPost] + [parse_link(link) for link in links]
+        texts = [self.linkify(textPost)] + [parse_link(link)
+                                            for link in links
+                                            if link != post['permalink_url']]  # Avoid self duplication
+
         textRaw = "<br>".join(texts) or post.get('description', "")
         text = remove_urls(remove_html_tags(textRaw))
+        textSentiment = remove_urls(remove_html_tags(textPost))
 
         doc = {
             'documentID': 'FB_' + post['id'],
@@ -92,7 +96,7 @@ class Facebook(object):
 
             'textRaw': textRaw,
             'text': text,
-            'textSentiment': textPost,
+            'textSentiment': textSentiment,
 
             'createdAt': self.format_date(post['created_time']),
             'url': post['permalink_url'],
@@ -129,6 +133,13 @@ class Facebook(object):
     def format_date(date):
         return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S%z')
 
+    @staticmethod
+    def linkify(text):
+        text = linkify_urls(text)
+        text = linkify_hashtags(text, 'facebook')
+        logger.debug("Linkified text: " + text)
+        return text
+
 
 class Twitter(object):
     CONSUMER_KEY = config.private.TW_CONSUMER_KEY
@@ -155,9 +166,10 @@ class Twitter(object):
 
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         textTweet = tweet['text']
-        texts = [textTweet] + [parse_link(link) for link in links]
+        texts = [cls.linkify(textTweet)] + [parse_link(link) for link in links]
         textRaw = " <br>".join(texts)
         text = remove_urls(remove_html_tags(textRaw))
+        textSentiment = remove_urls(remove_html_tags(textTweet))
 
         isShared = 'retweeted_status' in tweet
 
@@ -177,7 +189,7 @@ class Twitter(object):
 
             'textRaw': textRaw,
             'text': text,
-            'textSentiment': textTweet,
+            'textSentiment': textSentiment,
 
             'createdAt': cls.format_date(tweet['created_at']),
             'url': 'https://twitter.com/' + tweet["user"]["screen_name"] + '/status/' + tweet['id_str'],
@@ -201,6 +213,14 @@ class Twitter(object):
     @staticmethod
     def format_date(date):
         return datetime.strptime(date, "%a %b %d %H:%M:%S %z %Y")
+
+    @staticmethod
+    def linkify(text):
+        text = linkify_urls(text)
+        text = linkify_hashtags(text, 'twitter')
+        text = linkify_twitter_users(text)
+        logger.debug("Linkified text: " + text)
+        return text
 
 
 class RSS(object):
