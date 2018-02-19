@@ -52,6 +52,8 @@ def call_WF(text, textSentiment):
         logger.error("textSentiment: \t{}".format(textSentiment))
     except requests.ConnectionError as e:
         logger.error("Moriarty WF request failed: {}".format(e))
+    except requests.ReadTimeout:
+        logger.Error("Moriarty WF request timed-out")
     except requests.RequestException:
         logger.exception("Moriarty WF request failed")
     except TypeError:

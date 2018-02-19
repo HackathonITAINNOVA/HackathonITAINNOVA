@@ -13,10 +13,10 @@ Data intake from Facebook, Twitter and RSS.
 Published Python code gets user's social networks information, invokes NLP services and store results in Solr.
 
 #### Python dependencies
-* (facebook)[https://github.com/mobolic/facebook-sdk]
-* (tweepy)[https://github.com/tweepy/tweepy]
-* (feedparser)[https://github.com/kurtmckee/feedparser]
-* (pysolr)[https://github.com/django-haystack/pysolr]
+* [facebook](https://github.com/mobolic/facebook-sdk)
+* [tweepy](https://github.com/tweepy/tweepy)
+* [feedparser](https://github.com/kurtmckee/feedparser)
+* [pysolr](https://github.com/django-haystack/pysolr)
 
 ### WebApp
 User interface.
@@ -24,3 +24,4 @@ User interface.
 
 
 ##### You may find more information about our services at: [ITAINNOVA](http://www.itainnova.es), contacting with the **Big Data and Cognitive Systems** group (formerly **Software Engineering**). Don't hesitate to contact us!
+
