@@ -12,7 +12,7 @@ ELEMENTS = ["li", "footer", "header", "nav", "aside", "figure", "blockquote", "i
 WORDS = ["image", "img", "footer", "pie", "banner", "autoria",
          "cookie", "themes", "foto", "media", "encabezado", "registro",
          "entradilla", "telefono", "comment", "hidden", "dialog", "fail",
-         "fecha", "tweet", "twitter", "comentario", "date"]
+         "fecha", "tweet", "twitter", "comentario", "date", "ColumnaDerecha"]
 
 STYLES = ["text-align: center", "display: none"]
 
