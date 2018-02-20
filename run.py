@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # print("Task going to sleep")
     # time.sleep(4 * 60 * 60)
     # print("Task awoken")
-    # hackathon.solr.delete_all()
+    hackathon.solr.delete_all()
 
     hackathon.periodic_task()
 

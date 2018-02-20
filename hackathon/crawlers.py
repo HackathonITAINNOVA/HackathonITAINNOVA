@@ -76,13 +76,13 @@ class Facebook(object):
         logger.info("Processing fb post " + post['id'])
         logger.debug(post)
 
-        textPost = post.get('message', "")
+        textPost = post.get('message', "") or post.get('description', "")
         links = get_urls(textPost)
         texts = [self.linkify(textPost)] + [parse_link(link)
                                             for link in links
                                             if link != post['permalink_url']]  # Avoid self duplication
 
-        textRaw = "<br>".join(texts) or post.get('description', "")
+        textRaw = "<br>".join(texts)
         text = remove_urls(remove_html_tags(textRaw))
         textSentiment = remove_urls(remove_html_tags(textPost))
 
