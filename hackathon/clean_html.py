@@ -99,7 +99,7 @@ def parse_link(url):
 
 
 def get_urls(text):
-    return [match for match in URL_REGEX.findall(text)]
+    return [match[0] for match in URL_REGEX.findall(text)]
 
 
 def remove_urls(text):
