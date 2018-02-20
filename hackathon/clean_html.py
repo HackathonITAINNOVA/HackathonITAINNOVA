@@ -16,7 +16,7 @@ WORDS = ["image", "img", "footer", "pie", "banner", "autoria",
 
 STYLES = ["text-align: center", "display: none"]
 
-URL_REGEX = re.compile(r'http:\S+\b')
+URL_REGEX = re.compile(r'(?P<protocol>https?:\/\/(www.)?(?P<domain>[^\s\/]+)(\/\S+)?\b)')
 HASHTAG_REGEX = re.compile(r'#(\S+)\b')
 TWITTER_USER_REGEX = re.compile(r'@(\S+)\b')
 
@@ -127,5 +127,4 @@ def linkify_twitter_users(text):
 
 
 def get_domain(url):
-    PATTERN = r'^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)'
-    return re.match(PATTERN, url).group(1)
+    return URL_REGEX.match(url).groupdict('domain')
