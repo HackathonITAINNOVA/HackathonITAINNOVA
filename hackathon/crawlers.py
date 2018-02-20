@@ -201,7 +201,7 @@ class Twitter(object):
             'popularity': tweet.get('favorite_count', 0),
             'shares': tweet.get('retweet_count', 0),
 
-            'hashtagEntities': [hashtag['text'] for hashtag in tweet['entities']['hashtags']],
+            'hashtagEntities': ["#" + hashtag['text'] for hashtag in tweet['entities']['hashtags']],
             'isShared': isShared,
             'type': 'profile' if sourceId == username else 'interest',
         }
