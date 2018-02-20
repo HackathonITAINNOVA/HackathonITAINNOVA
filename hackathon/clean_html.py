@@ -125,5 +125,5 @@ def linkify_twitter_users(text):
 
 
 def get_domain(url):
-    PATTERN = r"^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)"
-    return re.match(PATTERN, url)[1]
+    PATTERN = r'^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)'
+    return re.match(PATTERN, url).group(1)
