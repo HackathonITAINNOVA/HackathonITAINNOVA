@@ -78,7 +78,7 @@ class Facebook(object):
 
         textPost = post.get('message', "") or post.get('description', "")
         links = get_urls(textPost)
-        texts = [self.linkify(textPost)] + [parse_link(link)
+        texts = [self.linkify(textPost)] + [linkify_urls(parse_link(link))
                                             for link in links
                                             if link != post['permalink_url']]  # Avoid self duplication
 
@@ -166,7 +166,7 @@ class Twitter(object):
 
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         textTweet = tweet['text']
-        texts = [cls.linkify(textTweet)] + [parse_link(link) for link in links]
+        texts = [cls.linkify(textTweet)] + [linkify_urls(parse_link(link)) for link in links]
         textRaw = " <br>".join(texts)
         text = remove_urls(remove_html_tags(textRaw))
         textSentiment = remove_urls(remove_html_tags(textTweet))
@@ -264,7 +264,7 @@ class RSS(object):
             date = entry.updated_parsed
         createdAt = datetime(*date[:6]) if date else datetime.now()
 
-        textRaw = entry.content[0].value if 'content' in entry else entry.summary
+        textRaw = linkify_urls(entry.content[0].value if 'content' in entry else entry.summary)
         text = remove_urls(remove_html_tags(textRaw))
 
         domain = get_domain(feed.get('link', ''))
