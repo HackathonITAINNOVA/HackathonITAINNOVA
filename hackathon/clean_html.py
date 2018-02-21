@@ -22,7 +22,7 @@ URL_REGEX = re.compile(r'''
     (?P<full>
         (?P<protocol>https?:\/\/)
         (www.)?
-        (?P<domain>[\w.-]+
+        (?P<domain>[\w.-]+?
         (?P<tld>(\.[\w]{2,3})+))
         (?P<path>\/\S+)?\b
     )
