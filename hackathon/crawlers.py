@@ -274,7 +274,7 @@ class RSS(object):
             'collectorID': 'rss',
 
             'sourceId': domain,
-            'sourceName': domain,
+            'sourceName': domain.get('domain',domain),
             'sourceUrl': feed.get('link', ''),
 
             'textRaw': textRaw,

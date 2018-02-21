@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 ELEMENTS = ["li", "footer", "header", "nav", "aside", "figure", "blockquote", "img"]
 
-WORDS = ["image", "img", "footer", "pie", "banner", "autoria",
-         "cookie", "themes", "foto", "media", "encabezado", "registro",
-         "entradilla", "telefono", "comment", "hidden", "dialog", "fail",
-         "fecha", "tweet", "twitter", "comentario", "date", "ColumnaDerecha"]
+WORDS = ["image", "img", "footer", "pie", "banner", "autoria", "cookie", "themes", "foto",
+         "media", "encabezado", "registro", "entradilla", "telefono", "comment", "hidden",
+         "dialog", "fail",  "fecha", "tweet", "twitter", "comentario", "date", "ColumnaDerecha",
+         "uh-cont2"]
 
 STYLES = ["text-align: center", "display: none"]
 
