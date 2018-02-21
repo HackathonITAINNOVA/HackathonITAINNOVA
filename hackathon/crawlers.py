@@ -46,7 +46,7 @@ class Facebook(object):
         return likes
 
     def get_feed(self, id, **kwargs):
-        feed = self._get_all_connections(id, 'feed', fields=self.DEFAULT_FIELDS, **kwargs)
+        feed = self._get_all_connections(id, 'posts', fields=self.DEFAULT_FIELDS, **kwargs)
         return feed
 
     def get_docs_from_interests(self, **kwargs):
@@ -77,10 +77,10 @@ class Facebook(object):
         logger.debug(post)
 
         textPost = post.get('message', "") or post.get('description', "")
-        links = get_urls(textPost)
-        texts = [self.linkify(textPost)] + [linkify_urls(parse_link(link))
-                                            for link in links
-                                            if link != post['permalink_url']]  # Avoid self duplication
+        texts = [self.linkify(textPost)]
+        link = post.get('link')
+        if link:
+            texts.append(parse_link(link))
 
         textRaw = "<br>".join(texts)
         text = remove_urls(remove_html_tags(textRaw))
@@ -104,7 +104,7 @@ class Facebook(object):
             'postUserId': post['from']['id'] if 'from' in post else '',
             'postUserName': post['from']['name'] if 'from' in post else '',
 
-            'links': post.get('link'),
+            'links': link,
             'shares': post['shares']['count'] if 'shares' in post else 0,
             'isShared': bool(post.get('parent_id')),
             'hashtagEntities': get_hashtags(text),
@@ -166,7 +166,7 @@ class Twitter(object):
 
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         textTweet = tweet['text']
-        texts = [cls.linkify(textTweet)] + [linkify_urls(parse_link(link)) for link in links]
+        texts = [cls.linkify(textTweet)] + [parse_link(link) for link in links]
         textRaw = " <br>".join(texts)
         text = remove_urls(remove_html_tags(textRaw))
         textSentiment = remove_urls(remove_html_tags(textTweet))
@@ -264,7 +264,7 @@ class RSS(object):
             date = entry.updated_parsed
         createdAt = datetime(*date[:6]) if date else datetime.now()
 
-        textRaw = linkify_urls(entry.content[0].value if 'content' in entry else entry.summary)
+        textRaw = entry.content[0].value if 'content' in entry else entry.summary
         text = remove_urls(remove_html_tags(textRaw))
 
         domain = get_domain(feed.get('link', ''))
@@ -274,7 +274,7 @@ class RSS(object):
             'collectorID': 'rss',
 
             'sourceId': domain,
-            'sourceName': domain.get('domain',domain),
+            'sourceName': domain,
             'sourceUrl': feed.get('link', ''),
 
             'textRaw': textRaw,
@@ -287,7 +287,7 @@ class RSS(object):
             'postUserId': entry.get('author', ''),
             'postUserName': entry.get('author', ''),
 
-            'hashtagEntities': [tag['term'] for tag in entry.get('tags', [])],
+            # 'hashtagEntities': [tag['term'] for tag in entry.get('tags', [])],
             'links': [link['href'] for link in entry.get('links', []) if link['type'] == 'text/html']
             # 'links': [link['href'] for link in entry.links[1:] if link['type'] == 'text/html']
         }
