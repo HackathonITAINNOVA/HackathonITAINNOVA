@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 import requests
+import html
 
 from . import config
 import logging
@@ -38,6 +39,8 @@ TWITTER_USER_REGEX = re.compile(r'''
     (?P<full>@
         (?P<user>\S+)\b)
     ''', re.X)
+
+HTML_TAGS_REGEX = re.compile('<.*?>')
 
 URL_STRING = '<a href="{}" target="_blank">{}</a>'
 
@@ -101,13 +104,14 @@ def filter_html(html):
     return text
 
 
-def remove_html_tags(html):
-    cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanr, '', html)
+def remove_html_tags(text):
+    text = re.sub(HTML_TAGS_REGEX, '', text)
 
-    cleantext.replace("\n", " ")
-    cleantext.replace("\t", " ")
-    return re.sub(r'\s+', ' ', cleantext)
+    text.replace("\n", " ")
+    text.replace("\t", " ")
+
+    text = html.unscape(text)
+    return re.sub(r'\s+', ' ', text)
 
 
 def parse_link(url):

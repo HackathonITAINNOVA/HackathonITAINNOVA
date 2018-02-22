@@ -112,6 +112,7 @@ class Facebook(object):
         }
 
         doc.update(self.count_all_reactions(post['id']))
+        # Sets type field
         doc.update(kwargs)
 
         logger.debug("Finished building document " + doc['documentID'])
