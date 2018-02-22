@@ -110,7 +110,7 @@ def remove_html_tags(text):
     text.replace("\n", " ")
     text.replace("\t", " ")
 
-    text = html.unscape(text)
+    text = html.unescape(text)
     return re.sub(r'\s+', ' ', text)
 
 
