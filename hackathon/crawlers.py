@@ -122,7 +122,7 @@ class Facebook(object):
     def count_all_reactions(self, post_id):
         logger.info("Counting reactions")
         # Fetch all reactions in a single request using Field Expansion and Field Aliases
-        fields = ','.join(['reactions.type({}).summary(1).as({})'.format(reaction)
+        fields = ','.join(['reactions.type({0}).summary(1).as({0})'.format(reaction)
                            for reaction in self.REACTIONS_TYPE])
 
         response = self.api.get_object(post_id, fields=fields)
