@@ -21,27 +21,36 @@ pool = Pool()
 def get_all_docs(from_fb, from_tw, from_rss):
     # Process all post from FACEBOOK
     if from_fb:
-        logger.info("Starting Facebook crawling")
-        fb_since = solr.get_facebook_last_date()
-        fb_limit = 0 if fb_since else config.settings.FACEBOOK_INITIAL_LIMIT_PER_PAGE
-        yield from facebook.get_all_docs(limit=fb_limit, since=fb_since)
-        logger.info("Facebook crawling ended")
+        try:
+            logger.info("Starting Facebook crawling")
+            fb_since = solr.get_facebook_last_date()
+            fb_limit = 0 if fb_since else config.settings.FACEBOOK_INITIAL_LIMIT_PER_PAGE
+            yield from facebook.get_all_docs(limit=fb_limit, since=fb_since)
+            logger.info("Facebook crawling ended")
+        except:
+            logger.exception("FATAL ERROR, facebook crawling failed")
 
     # Process all tweets from TWITTER
     if from_tw:
-        logger.info("Starting Twitter crawling")
-        tw_since = solr.get_twitter_last_id()
-        tw_limit = 0 if tw_since else config.settings.TWITTER_INITIAL_LIMIT
-        yield from twitter.get_all_docs(limit=tw_limit, since_id=tw_since)
-        logger.info("Twitter crawling ended")
+        try:
+            logger.info("Starting Twitter crawling")
+            tw_since = solr.get_twitter_last_id()
+            tw_limit = 0 if tw_since else config.settings.TWITTER_INITIAL_LIMIT
+            yield from twitter.get_all_docs(limit=tw_limit, since_id=tw_since)
+            logger.info("Twitter crawling ended")
+        except:
+            logger.exception("FATAL ERROR, twitter crawling failed")
 
     # Process all entries from RSSs
     if from_rss:
-        logger.info("Starting RSS crawling")
-        rss_since = solr.get_rss_last_date()
-        rss_limit = 0 if rss_since else config.settings.RSS_INITIAL_LIMIT_PER_PAGE
-        yield from rss.get_all_docs(limit=rss_limit, since=rss_since)
-        logger.info("RSS crawling ended")
+        try:
+            logger.info("Starting RSS crawling")
+            rss_since = solr.get_rss_last_date()
+            rss_limit = 0 if rss_since else config.settings.RSS_INITIAL_LIMIT_PER_PAGE
+            yield from rss.get_all_docs(limit=rss_limit, since=rss_since)
+            logger.info("RSS crawling ended")
+        except:
+            logger.exception("FATAL ERROR, rss crawling failed")
 
 
 def process_all_docs(from_fb=True, from_tw=True, from_rss=True):
