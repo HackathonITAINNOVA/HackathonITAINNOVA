@@ -155,4 +155,4 @@ def get_domain(url):
 
 
 def remove_scripts(text):
-    return HTML_SCRIPTS_REGEX.sub(text, '')
+    return HTML_SCRIPTS_REGEX.sub('', text)
