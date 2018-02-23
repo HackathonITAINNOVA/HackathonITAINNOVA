@@ -25,7 +25,7 @@ URL_REGEX = re.compile(r'''
         (www.)?
         (?P<domain>[\w.-]+?
         (?P<tld>(\.[\w]{2,3})+))
-        (?P<path>\/\S+)?\b
+        (?P<path>\/[\w.-\/]+)?
     )
     ''', re.X)
 
