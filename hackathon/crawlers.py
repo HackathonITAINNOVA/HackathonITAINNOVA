@@ -77,6 +77,7 @@ class Facebook(object):
         logger.debug(post)
 
         textPost = post.get('message', "") or post.get('description', "")
+        textPost = textPost.strip()
         if textPost[-1] != '.':
             textPost += '.'
         texts = [self.linkify(textPost)]
@@ -172,6 +173,7 @@ class Twitter(object):
 
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         textTweet = tweet['text']
+        textTweet = textTweet.strip()
         if textTweet[-1] != '.':
             textTweet += '.'
         texts = [cls.linkify(textTweet)] + [parse_link(link) for link in links]
