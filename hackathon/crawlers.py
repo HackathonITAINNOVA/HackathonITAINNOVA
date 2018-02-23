@@ -78,8 +78,10 @@ class Facebook(object):
 
         textPost = post.get('message', "") or post.get('description', "")
         textPost = textPost.strip()
-        if textPost and textPost[-1] != '.':
+
+        if remove_urls(textPost) and textPost[-1] != '.':
             textPost += '.'
+
         texts = [self.linkify(textPost)]
         link = post.get('link')
         if link:
@@ -175,7 +177,7 @@ class Twitter(object):
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
         textTweet = tweet['text']
         textTweet = textTweet.strip()
-        if textTweet and textTweet[-1] != '.':
+        if remove_urls(textTweet) and textTweet[-1] != '.':
             textTweet += '.'
         texts = [cls.linkify(textTweet)] + [parse_link(link) for link in links]
         textRaw = " <br>".join(texts)
