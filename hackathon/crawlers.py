@@ -86,6 +86,7 @@ class Facebook(object):
             texts.append(parse_link(link))
 
         textRaw = "<br>".join(texts)
+        textRaw = remove_scripts(textRaw)
         text = remove_urls(remove_html_tags(textRaw))
         textSentiment = remove_urls(remove_html_tags(textPost))
 
@@ -178,6 +179,7 @@ class Twitter(object):
             textTweet += '.'
         texts = [cls.linkify(textTweet)] + [parse_link(link) for link in links]
         textRaw = " <br>".join(texts)
+        textRaw = remove_scripts(textRaw)
         text = remove_urls(remove_html_tags(textRaw))
         textSentiment = remove_urls(remove_html_tags(textTweet))
 
@@ -275,6 +277,7 @@ class RSS(object):
         createdAt = datetime(*date[:6]) if date else datetime.now()
 
         textRaw = entry.content[0].value if 'content' in entry else entry.summary
+        textRaw = remove_scripts(textRaw)
         text = remove_urls(remove_html_tags(textRaw))
 
         domain = get_domain(feed.get('link', ''))

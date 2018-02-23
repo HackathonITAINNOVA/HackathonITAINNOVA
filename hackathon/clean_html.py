@@ -40,7 +40,9 @@ TWITTER_USER_REGEX = re.compile(r'''
         (?P<user>\S+)\b)
     ''', re.X)
 
-HTML_TAGS_REGEX = re.compile('<.*?>')
+HTML_TAGS_REGEX = re.compile(r'<.*?>')
+
+HTML_SCRIPTS_REGEX = re.compile(r'<script.*?\/script>', re.IGNORECASE)
 
 URL_STRING = '<a href="{}" target="_blank">{}</a>'
 
@@ -150,3 +152,7 @@ def linkify_twitter_users(text):
 
 def get_domain(url):
     return URL_REGEX.match(url)['domain']
+
+
+def remove_scripts(text):
+    return HTML_SCRIPTS_REGEX.sub(text, '')
