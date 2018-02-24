@@ -80,7 +80,7 @@ class Facebook(object):
         textPost = textPost.strip()
 
         if remove_urls(textPost) and textPost[-1] != '.':
-            textPost += '.'
+            textPost += ' .'
 
         texts = [self.linkify(textPost)]
         link = post.get('link')
@@ -178,7 +178,7 @@ class Twitter(object):
         textTweet = tweet['text']
         textTweet = textTweet.strip()
         if remove_urls(textTweet) and textTweet[-1] != '.':
-            textTweet += '.'
+            textTweet += ' .'
         texts = [cls.linkify(textTweet)] + [parse_link(link) for link in links]
         textRaw = " <br>".join(texts)
         textRaw = remove_scripts(textRaw)
