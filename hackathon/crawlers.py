@@ -164,7 +164,9 @@ class Twitter(object):
         self.username = self.api.auth.get_username()
 
     def get_home(self, limit=100, since_id=None):
-        return (status._json for status in tweepy.Cursor(self.api.home_timeline, since_id).items(limit))
+        return (status._json for status in tweepy.Cursor(self.api.home_timeline,
+                                                         since_id,
+                                                         tweet_mode='extended').items(limit))
 
     def get_all_docs(self, **kwargs):
         return (self.build_document(self.username, tweet) for tweet in self.get_home(**kwargs))
@@ -175,7 +177,7 @@ class Twitter(object):
         logger.debug(tweet)
 
         links = [url['expanded_url'] for url in tweet['entities']['urls']]
-        textTweet = tweet['text']
+        textTweet = tweet['full_text']
         textTweet = textTweet.strip()
         if remove_urls(textTweet) and textTweet[-1] != '.':
             textTweet += ' .'
