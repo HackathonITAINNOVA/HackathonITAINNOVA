@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-ELEMENTS = ["li", "footer", "header", "nav", "aside", "figure", "blockquote", "img"]
+ELEMENTS = ["li", "footer", "header", "nav", "aside", "figure", "blockquote", "img", "script"]
 
 WORDS = [re.compile(w, re.IGNORECASE)
          for w in ["image", "img", "footer", "pie", "banner", "autoria", "cookie", "themes", "foto",
